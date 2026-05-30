@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Preparatório CCNA 200-301 - Aula 2</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        header {
+            text-align: center;
+            border-bottom: 3px solid #005a9c;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #005a9c;
+            margin: 0;
+            font-size: 26px;
+        }
+        .methodology {
+            background-color: #e6f2fa;
+            border-left: 5px solid #005a9c;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #fafafa;
+        }
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+        .scenario {
+            background: #fff;
+            border: 1px dashed #b0bec5;
+            padding: 10px 15px;
+            margin-bottom: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            white-space: pre-line;
+        }
+        .options label {
+            display: block;
+            padding: 10px;
+            margin: 6px 0;
+            background: #fff;
+            border: 1px solid #dcdcdc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .options label:hover {
+            background: #f0f0f0;
+            border-color: #a0a0a0;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            background-color: #005a9c;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #004475;
+        }
+        #result-card {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .excellent { background-color: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .good { background-color: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
+        .satisfactory { background-color: #fff3cd; color: #856404; border: 2px solid #ffeeba; }
+        .failed { background-color: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+        
+        /* Classes para validação visual em tempo real */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            font-weight: bold;
+        }
+        .incorrect-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>SIMULADO FINAL – AULA 2</h1>
+        <p><strong>Foco Especial:</strong> Osi Model, Encapsulamento e Funções de Hardware</p>
+    </header>
+
+    <div class="methodology">
+        <strong>Metodologia SIM-DOC-PAR:</strong> Validação de conhecimento crítico para o exame Cisco CCNA 200-301. As questões abaixo exigem análise lógica e interpretação de cenários, simulando o ambiente rigoroso da certificação oficial.
+    </div>
+
+    <form id="quiz-form">
+        <div class="question-block" data-correct="C">
+            <div class="question-title">Questão 1</div>
+            <p>Um técnico analisa uma captura de tráfego de rede e observa que um dispositivo está tomando decisões inteligentes sobre o melhor caminho (path selection) para encaminhar pacotes entre redes estruturais diferentes.</p>
+            <p>Qual camada do OSI Model está executando essa função?</p>
+            <div class="options">
+                <label><input type="radio" name="q1" value="A"> A) Physical Layer</label>
+                <label><input type="radio" name="q1" value="B"> B) Data Link Layer</label>
+                <label><input type="radio" name="q1" value="C"> C) Network Layer</label>
+                <label><input type="radio" name="q1" value="D"> D) Transport Layer</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <div class="question-title">Questão 2</div>
+            <p>Qual informação específica é mapeada e utilizada pelos switches na Data Link Layer para garantir a entrega de quadros (frames) de dados estritamente dentro da mesma rede local (LAN)?</p>
+            <div class="options">
+                <label><input type="radio" name="q2" value="A"> A) TCP Port</label>
+                <label><input type="radio" name="q2" value="B"> B) IP Address</label>
+                <label><input type="radio" name="q2" value="C"> C) MAC Address</label>
+                <label><input type="radio" name="q2" value="D"> D) DNS Name</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <div class="question-title">Questão 3</div>
+            <p>Um usuário do curso preparatório abre um navegador Web (ex: Chrome, Firefox) para acessar o portal de laboratórios. Em qual camada do OSI Model a aplicação e seus respectivos protocolos base (como HTTP/HTTPS) operam diretamente?</p>
+            <div class="options">
+                <label><input type="radio" name="q3" value="A"> A) Application Layer</label>
+                <label><input type="radio" name="q3" value="B"> B) Session Layer</label>
+                <label><input type="radio" name="q3" value="C"> C) Transport Layer</label>
+                <label><input type="radio" name="q3" value="D"> D) Physical Layer</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <div class="question-title">Questão 4</div>
+            <p>Associe corretamente o dispositivo de rede infraestrutural à camada principal (modelo hierárquico) em que ele baseia suas decisões de encaminhamento de dados:</p>
+            <div class="options">
+                <label><input type="radio" name="q4" value="A"> A) Router → Layer 2</label>
+                <label><input type="radio" name="q4" value="B"> B) Switch → Layer 3</label>
+                <label><input type="radio" name="q4" value="C"> C) Router → Layer 3</label>
+                <label><input type="radio" name="q4" value="D"> D) Hub → Layer 4</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <div class="question-title">Questão 5</div>
+            <p>Durante a execução de uma simulação controlada no Cisco Packet Tracer, um esquadrão de alunos abre uma PDU e observa os seguintes campos em destaque:</p>
+            <div class="scenario">Source IP: 192.168.1.10
+Destination IP: 192.168.1.20</div>
+            <p>Estas informações de endereçamento lógico estruturado pertencem principalmente a qual camada?</p>
+            <div class="options">
+                <label><input type="radio" name="q5" value="A"> A) Physical Layer</label>
+                <label><input type="radio" name="q5" value="B"> B) Data Link Layer</label>
+                <label><input type="radio" name="q5" value="C"> C) Network Layer</label>
+                <label><input type="radio" name="q5" value="D"> D) Application Layer</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <div class="question-title">Questão 6</div>
+            <p>Qual das opções representa rigorosamente a ordem sequencial das sete camadas do OSI Model, lidas em sentido top-down (de cima para baixo, da aplicação ao meio físico)?</p>
+            <div class="options">
+                <label><input type="radio" name="q6" value="A"> A) Application, Transport, Network, Data Link, Physical</label>
+                <label><input type="radio" name="q6" value="B"> B) Application, Presentation, Session, Transport, Network, Data Link, Physical</label>
+                <label><input type="radio" name="q6" value="C"> C) Presentation, Application, Session, Transport, Data Link, Network, Physical</label>
+                <label><input type="radio" name="q6" value="D"> D) Application, Session, Presentation, Transport, Network, Physical, Data Link</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <div class="question-title">Questão 7</div>
+            <p>Qual componente físico de infraestrutura de rede lê e monta ativamente tabelas baseadas em MAC addresses para comutar quadros Ethernet diretamente às portas de destino corretas?</p>
+            <div class="options">
+                <label><input type="radio" name="q7" value="A"> A) Router</label>
+                <label><input type="radio" name="q7" value="B"> B) Firewall</label>
+                <label><input type="radio" name="q7" value="C"> C) Switch</label>
+                <label><input type="radio" name="q7" value="D"> D) Access Point</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="D">
+            <div class="question-title">Questão 8</div>
+            <p>Ao enviar um pacote ICMP (ping) entre duas estações de trabalho mapeadas na mesma VLAN e na mesma sub-rede, qual dado identifica de forma única e física a placa de rede (NIC) de destino no barramento local?</p>
+            <div class="options">
+                <label><input type="radio" name="q8" value="A"> A) Port Number</label>
+                <label><input type="radio" name="q8" value="B"> B) IP Address</label>
+                <label><input type="radio" name="q8" value="C"> C) Default Gateway</label>
+                <label><input type="radio" name="q8" value="D"> D) MAC Address</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <div class="question-title">Questão 9</div>
+            <p>Qual camada técnica do modelo estrutural é a única responsável por converter os dados lógicos em sinais elétricos, ópticos ou de rádio, transmitindo os bits brutos através do meio físico?</p>
+            <div class="options">
+                <label><input type="radio" name="q9" value="A"> A) Network Layer</label>
+                <label><input type="radio" name="q9" value="B"> B) Data Link Layer</label>
+                <label><input type="radio" name="q9" value="C"> C) Physical Layer</label>
+                <label><input type="radio" name="q9" value="D"> D) Session Layer</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="C">
+            <div class="question-title">Questão 10</div>
+            <p>Analisando as regras fundamentais de arquitetura e o fluxo de tráfego, assinale a afirmação tecnicamente verdadeira:</p>
+            <div class="options">
+                <label><input type="radio" name="q10" value="A"> A) Os Switches utilizam endereçamento IP para encaminhamento local de pacotes.</label>
+                <label><input type="radio" name="q10" value="B"> B) Os Roteadores utilizam MAC Addresses para escolher a melhor rota em tabelas WAN remotas.</label>
+                <label><input type="radio" name="q10" value="C"> C) A camada Network trabalha nativamente com pacotes e endereçamento IP.</label>
+                <label><input type="radio" name="q10" value="D"> D) A camada Physical utiliza cabeçalhos com MAC Address de origem para controle de tráfego de bits.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="A">
+            <div class="question-title">Questão 11 (DESAFIO CCNA)</div>
+            <p>Um computador Host_A está configurado com os parâmetros:</p>
+            <div class="scenario">IP: 192.168.1.10 /24</div>
+            <p>Este host inicia um disparo de dados com o Host_B que possui o seguinte destino na mesma infraestrutura:</p>
+            <div class="scenario">IP: 192.168.1.20 /24</div>
+            <p>Com base na análise de escopo de sub-rede, qual afirmação descreve corretamente o fluxo real que ocorrerá?</p>
+            <div class="options">
+                <label><input type="radio" name="q11" value="A"> A) A comunicação ocorrerá diretamente pela LAN através do Switch de Camada 2, sem passar pelo Router.</label>
+                <label><input type="radio" name="q11" value="B"> B) O pacote precisará ser enviado obrigatoriamente ao Router (Default Gateway) para sair da rede local.</label>
+                <label><input type="radio" name="q11" value="C"> C) Será necessária a tradução dinâmica por um dispositivo NAT local para permitir a comunicação interna.</label>
+                <label><input type="radio" name="q11" value="D"> D) Os endereços estão mapeados em redes lógicas completamente diferentes e falharão por padrão.</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-correct="B">
+            <div class="question-title">Questão 12 (DESAFIO CCNA)</div>
+            <p>Ao realizar uma auditoria de encapsulamento com captura de tráfego, o Analista de Troubleshooting abre os detalhes de um quadro Ethernet. Em qual nível do cabeçalho (Layer correspondente) ele visualizará necessariamente os campos:</p>
+            <div class="scenario">Source MAC
+Destination MAC</div>
+            <div class="options">
+                <label><input type="radio" name="q12" value="A"> A) Layer 1</label>
+                <label><input type="radio" name="q12" value="B"> B) Layer 2</label>
+                <label><input type="radio" name="q12" value="C"> C) Layer 3</label>
+                <label><input type="radio" name="q12" value="D"> D) Layer 4</label>
+            </div>
+        </div>
+
+        <button type="button" onclick="calculateScore()">Corrigir Simulado e Ver Resultado</button>
+    </form>
+
+    <div id="result-card">
+        <h2 id="result-title"></h2>
+        <p id="result-score" style="font-size: 20px; font-weight: bold;"></p>
+        <p id="result-feedback"></p>
+    </div>
+</div>
+
+<script>
+    function calculateScore() {
+        const form = document.getElementById('quiz-form');
+        const questionBlocks = document.querySelectorAll('.question-block');
+        let score = 0;
+        const totalQuestions = questionBlocks.length;
+
+        questionBlocks.forEach((block, index) => {
+            const correctAnswer = block.getAttribute('data-correct');
+            const qName = 'q' + (index + 1);
+            const selectedOption = form.querySelector(`input[name="${qName}"]:checked`);
+            
+            // Resetar estilos anteriores de correção
+            const labels = block.querySelectorAll('.options label');
+            labels.forEach(label => {
+                label.classList.remove('correct-answer', 'incorrect-answer');
+            });
+
+            // Destacar a resposta correta em verde de qualquer forma
+            labels.forEach(label => {
+                if (label.innerText.trim().startsWith(correctAnswer)) {
+                    label.classList.add('correct-answer');
+                }
+            });
+
+            if (selectedOption) {
+                if (selectedOption.value === correctAnswer) {
+                    score++;
+                } else {
+                    // Se errou, destaca a opção marcada pelo aluno em vermelho
+                    selectedOption.parentElement.classList.add('incorrect-answer');
+                }
+            } else {
+                // Se não respondeu, marca o bloco de opções como erro sutil
+                labels[0].parentElement.parentElement.classList.add('incorrect-answer');
+            }
+        });
+
+        // Mostrar o painel de resultados com comportamento dinâmico
+        const resultCard = document.getElementById('result-card');
+        const resultTitle = document.getElementById('result-title');
+        const resultScore = document.getElementById('result-score');
+        const resultFeedback = document.getElementById('result-feedback');
+
+        resultCard.className = ""; // Limpar classes anteriores
+        resultCard.style.display = "block";
+
+        resultScore.innerText = `Você acertou ${score} de ${totalQuestions} questões.`;
+
+        // Atribuição de conceitos baseada na tabela oficial de desempenho
+        if (score >= 11) {
+            resultCard.classList.add('excellent');
+            resultTitle.innerText = "Conceito: Excelente! 🚀";
+            resultFeedback.innerText = "Parabéns! Você demonstrou pleno domínio dos conceitos do OSI Model, fluxo de encapsulamento e hardware. Seu esquadrão está mais do que pronto para avançar para as dinâmicas de Ethernet e switching prático no bastidor!";
+        } else if (score >= 9) {
+            resultCard.classList.add('good');
+            resultTitle.innerText = "Conceito: Bom Domínio 👍";
+            resultFeedback.innerText = "Ótimo resultado. Você compreendeu bem a relação entre protocolos e camadas lógicas. Revise as alternativas que errou para garantir 100% de precisão nos próximos laboratórios físicos.";
+        } else if (score >= 7) {
+            resultCard.classList.add('satisfactory');
+            resultTitle.innerText = "Conceito: Aprendizagem Satisfatória 📚";
+            resultFeedback.innerText = "Você tem uma base formada, mas ainda restam dúvidas em pontos críticos de decisão de tráfego e encapsulamento de PDUs. Sugerimos revisar o Guia de Procedimentos antes do próximo projeto prático.";
+        } else {
+            resultCard.classList.add('failed');
+            resultTitle.innerText = "Conceito: Reforço Recomendado ⚠️";
+            resultFeedback.innerText = "Atenção técnica! O nível de acertos indica falhas na fundação lógica estrutural do modelo. Refaça a simulação estruturada no Packet Tracer focando nas abas do Simulation Mode e consulte o monitor antes do início do Módulo 2.";
+        }
+
+        // Rolar a tela suavemente até o resultado final
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
