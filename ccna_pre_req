@@ -1,1 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>CCNA 200-301 - Simulado de Pré-requisitos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Share Tech Mono', monospace; }
+        body { background-color: #0d1117; color: #c9d1d9; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; width: 100%; max-width: 900px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 25px; }
+        .title { color: #049fd9; font-size: 1.2rem; text-transform: uppercase; }
+        .stats { display: flex; gap: 20px; font-size: 1.1rem; }
+        .timer { color: #ff7b72; font-weight: bold; }
+        .timer.safe { color: #3fb950; }
+        .timer.warning { color: #d29922; }
+        .question-text { font-size: 1.2rem; margin-bottom: 25px; line-height: 1.5; color: #ffffff; }
+        .options-container { display: flex; flex-direction: column; gap: 10px; }
+        .option { background-color: #0d1117; border: 1px solid #30363d; padding: 12px 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; }
+        .option:hover:not(.disabled) { border-color: #049fd9; background-color: rgba(4, 159, 217, 0.1); }
+        .option.selected { border-color: #049fd9; background-color: rgba(4, 159, 217, 0.2); }
+        .option.correct { border-color: #3fb950 !important; background-color: rgba(63, 185, 80, 0.15) !important; color: #3fb950; }
+        .option.wrong { border-color: #ff7b72 !important; background-color: rgba(255, 123, 114, 0.15) !important; color: #ff7b72; }
+        .option.disabled { cursor: not-allowed; opacity: 0.8; }
+        .option-letter { font-weight: bold; margin-right: 15px; color: #8b949e; width: 25px; }
+        .btn-container { margin-top: 30px; display: flex; justify-content: flex-end; }
+        .btn { background-color: #238636; color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .btn:hover:not(:disabled) { background-color: #2ea043; }
+        .btn:disabled { background-color: #30363d; color: #8b949e; cursor: not-allowed; }
+        .result-screen { display: none; text-align: center; }
+        .result-score { font-size: 3.5rem; color: #049fd9; margin: 20px 0; }
+        .pass { color: #3fb950; }
+        .fail { color: #ff7b72; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="quiz-container">
+        <div class="header">
+            <div class="title">SysAdmin# run pre-req-exam</div>
+            <div class="stats">
+                <div>Q: <span id="question-counter">1/100</span></div>
+                <div>Time: <span id="timer" class="timer safe">00:30</span></div>
+            </div>
+        </div>
+        <div class="question-text" id="question-text">Inicializando...</div>
+        <div class="options-container" id="options-container"></div>
+        <div class="btn-container">
+            <button class="btn" id="action-btn" disabled>Confirmar Resposta</button>
+        </div>
+    </div>
+
+    <div class="container result-screen" id="result-container">
+        <div class="header"><div class="title">SysAdmin# show results</div></div>
+        <h2>Avaliação Concluída</h2>
+        <div class="result-score" id="final-score">0%</div>
+        <h3 id="result-msg"></h3>
+        <p style="margin-top: 20px; color: #8b949e;">Meta de Aprovação para Laboratório: 80%</p>
+        <div class="btn-container" style="justify-content: center; margin-top: 30px;">
+            <button class="btn" onclick="location.reload()">Reiniciar Teste</button>
+        </div>
+    </div>
+
+    <script>
+        // Estrutura: ["Pergunta", ["Correta", "Distrator 1", "Distrator 2", "Distrator 3", "Distrator 4"], Tempo_Segundos]
+        // O JS se encarrega de embaralhar as opções na tela, mas a correta é sempre a do índice 0 nesta matriz base.
+        const db = [
+            ["1. O que significa a sigla EF no cabeamento estruturado?", ["Entrance Facility", "Ethernet Frame", "Equipment Floor", "Exterior Firewall", "Endpoint Filter"], 30],
+            ["2. Qual é a função principal da Entrance Facility (EF)?", ["Receber o link de fibra óptica do provedor externo e marcar o ponto de demarcação.", "Roteamento inter-VLAN entre andares diferentes do prédio.", "Fornecer energia ininterrupta para os switches de acesso.", "Criptografar todo o tráfego que sai para a internet pública.", "Monitorar o tráfego de rede interna através de SNMP."], 30],
+            ["3. O que é o 'Demarc' ou Ponto de Demarcação?", ["A fronteira física onde termina a responsabilidade do provedor (ISP) e começa a da equipe de TI.", "O ponto exato onde ocorre uma colisão em uma rede Ethernet Half-Duplex.", "O limite de 100 metros do cabo de par trançado UTP.", "A porta específica do roteador configurada como gateway padrão.", "A divisão lógica entre o domínio de broadcast e de colisão."], 30],
+            ["4. O que significa a sigla ER no cabeamento estruturado?", ["Equipment Room (Sala de Equipamentos)", "Ethernet Router (Roteador Ethernet)", "Exterior Routing (Roteamento Externo)", "Endpoint Resolution (Resolução de Endpoint)", "Error Recovery (Recuperação de Erro)"], 30],
+            ["5. O que é o MDF em uma rede predial?", ["Main Distribution Frame (O rack central ou a sala principal de distribuição da rede).", "MAC Data Frame (O quadro de dados de Camada 2).", "Multiple Device Forwarding (Encaminhamento para múltiplos dispositivos).", "Master Domain Filter (Filtro de domínio mestre).", "Main DNS Facility (Instalação DNS principal)."], 30],
+            ["6. Que tipo de equipamentos ficam guardados no ER/MDF?", ["Roteadores de borda, Firewalls, Core Switches e Servidores.", "Apenas Patch Cords e espelhos de tomada.", "Apenas modems analógicos legados e telefones.", "Exclusivamente nobreaks e quadros de energia.", "Monitores de CFTV e rádios de comunicação amadora."], 30],
+            ["7. O que significa a sigla TR?", ["Telecommunications Room (Sala de Telecomunicações)", "Token Ring (Rede em Anel)", "Transport Routing (Roteamento de Transporte)", "Time Recovery (Recuperação de Tempo)", "Trunk Relay (Retransmissão de Tronco)"], 30],
+            ["8. O que é o IDF em uma rede corporativa?", ["Intermediate Distribution Frame (Rack secundário nos andares).", "Internal Data Firewall (Firewall interno de dados).", "Internet Domain Filter (Filtro de domínio de internet).", "Isolated Device Frame (Quadro de dispositivo isolado).", "Integrated DHCP Facility (Instalação DHCP integrada)."], 30],
+            ["9. Qual o componente do rack usado para organizar, fixar e rotular os cabos rígidos vindos das paredes?", ["Patch Panel", "Switch Core", "Router de Borda", "Servidor DNS", "Multiplexador Óptico"], 30],
+            ["10. Como se chama o cabo flexível usado para manobrar e ligar o Patch Panel às portas do Switch?", ["Patch Cord", "Cabo Coaxial", "Cabo Serial DB9", "Fibra Monomodo", "Cabo Tronco de Energia"], 30],
+            ["11. O que é o Cabeamento Backbone (ou Vertical)?", ["A interconexão de alta velocidade que interliga o MDF aos IDFs de outros andares.", "O cabo que conecta o computador do usuário à tomada na parede.", "A conexão sem fio entre dois Access Points.", "O cabo da operadora que liga o poste ao roteador na rua.", "O conector interno da placa-mãe do servidor."], 30],
+            ["12. Qual mídia de transmissão é mais recomendada para o Backbone devido à distância e velocidade?", ["Fibra Óptica", "Cabo UTP Cat5e", "Cabo Coaxial RG6", "Rede Wireless (Wi-Fi)", "Bluetooth 5.0"], 30],
+            ["13. O que é o Cabeamento Horizontal?", ["O trajeto de cabos que saem do Patch Panel no andar e correm até as tomadas das mesas.", "O cabo de fibra que interliga dois andares diferentes.", "A conexão do roteador da empresa até o Data Center em outra cidade.", "A fiação de energia que alimenta os racks no MDF.", "O espelhamento de portas (SPAN) realizado via configuração no Switch."], 30],
+            ["14. Qual é o limite máximo de comprimento do cabo permanente no cabeamento horizontal pelas normas EIA/TIA?", ["90 metros", "100 metros", "50 metros", "10 metros", "500 metros"], 30],
+            ["15. O que significa a sigla WA no cabeamento estruturado?", ["Work Area (Área de Trabalho ou a mesa final do usuário).", "Wide Area (Área Ampla WAN).", "Wireless Access (Acesso sem fio).", "Web Application (Aplicação Web).", "Window Authentication (Autenticação de Janela)."], 30],
+            ["16. Qual o limite máximo combinado de tamanho para todos os Patch Cords de um canal de cabo horizontal?", ["10 metros", "20 metros", "5 metros", "15 metros", "100 metros"], 30],
+            ["17. O que é um Keystone?", ["O conector fêmea padrão RJ45 fixado nas tomadas de parede ou caixas de piso.", "Um tipo de alicate para decapar cabos de fibra.", "O software de gerenciamento de switches da Cisco.", "Um protocolo de roteamento dinâmico obsoleto.", "A extremidade macho de vidro de um conector óptico LC."], 30],
+            ["18. Quais são os dois padrões de pinagem de cabos de par trançado normatizados no mercado?", ["T568A e T568B", "RJ11 e RJ45", "Cat5e e Cat6", "802.11a e 802.11b", "IPv4 e IPv6"], 30],
+            ["19. O que acontece se montarmos um cabo UTP com o padrão T568A em uma ponta e T568B na outra ponta?", ["Ele se transforma em um cabo cruzado (Crossover).", "Ele gera um curto-circuito e queima a porta do switch.", "Ele se torna um cabo de console (Rollover).", "Ele vira um cabo de alimentação PoE apenas.", "A velocidade fica limitada permanentemente a 10 Mbps."], 30],
+            ["20. Para que serve tradicionalmente um cabo Crossover?", ["Para conectar diretamente dispositivos que operam na mesma camada do modelo OSI (ex: Switch com Switch, PC com PC).", "Para ligar um PC diretamente a uma tomada elétrica de parede.", "Para interligar exclusivamente roteadores a modems ópticos.", "Para atualizar o firmware (sistema) de um switch Cisco via porta console.", "Para isolar tráfego de telefonia analógica do tráfego de dados."], 30],
+            ["21. O que é a tecnologia Auto-MDIX presente nos switches modernos?", ["Um recurso que detecta automaticamente o tipo de cabo (direto ou cruzado) e reconfigura as linhas internas de transmissão.", "Uma função que bloqueia portas que estão enviando muito tráfego de broadcast.", "O protocolo responsável por distribuir IPs automaticamente.", "A tecnologia que criptografa os dados antes deles saírem pelo cabo UTP.", "Um ajuste automático que aumenta a voltagem do PoE para alimentar câmeras."], 30],
+            ["22. Qual a diferença física interna entre um cabo Cat5e e um cabo Cat6?", ["O Cat6 possui condutores de cobre mais grossos e frequentemente um separador plástico interno em cruz.", "O Cat5e é de fibra óptica e o Cat6 é de cobre metálico.", "O Cat6 possui 10 pares de fios contra os 4 pares do Cat5e.", "O Cat5e não utiliza conector RJ45, exigindo conectores BNC.", "O Cat6 só pode ser utilizado para transmissão de energia (PoE), não de dados."], 30],
+            ["23. O que causa o fenômeno da atenuação em um cabo de rede metálico?", ["A perda natural de intensidade do sinal elétrico provocada pela resistência do cobre à medida que a distância aumenta.", "A colisão de pacotes quando o dispositivo opera no modo Full-Duplex.", "A invasão da rede por um ataque de negação de serviço (DDoS).", "A quebra mecânica completa do núcleo de vidro da fibra.", "O envio excessivo de pacotes de broadcast por um dispositivo defeituoso."], 30],
+            ["24. Qual o nome da ferramenta usada para pressionar e prender mecanicamente os fios de cobre dentro do Keystone?", ["Ferramenta de Impacto (Punch Down)", "Alicate de Crimpagem", "Multímetro Digital", "Decapador de Fios", "Testador de Cabos (Lan Tester)"], 30],
+            ["25. O que significa o termo 'NEXT' (Near-End Crosstalk) em certificação de cabos?", ["Interferência eletromagnética (diafonia) provocada pelo vazamento de sinal entre pares de fios adjacentes dentro do próprio cabo.", "A perda de dados gerada quando o cabo excede os 100 metros de comprimento.", "O atraso de tempo (latência) gerado pelo processador do roteador.", "A colisão de dados no exato momento de chegada na placa de rede.", "Um erro lógico causado por configurações incorretas de sub-rede."], 30],
+            ["26. Quantos bits possui um endereço IPv4 completo?", ["32 bits", "16 bits", "64 bits", "128 bits", "256 bits"], 30],
+            ["27. Em quantas partes decimais o IPv4 é dividido para facilitar a leitura humana?", ["Em 4 partes (octetos).", "Em 3 partes (segmentos).", "Em 6 partes hexadecimais.", "Em 8 partes binárias.", "Em 2 partes (Rede e Host apenas)."], 30],
+            ["28. Quantos bits existem dentro de um único octeto?", ["8 bits", "4 bits", "16 bits", "32 bits", "64 bits"], 30],
+            ["29. Qual é o menor e o maior valor decimal que um octeto pode assumir?", ["Mínimo de 0 e máximo de 255.", "Mínimo de 1 e máximo de 254.", "Mínimo de 0 e máximo de 256.", "Mínimo de 1 e máximo de 1024.", "Mínimo de 0 e máximo de 128."], 30],
+            ["30. No modelo tradicional Classful, quais são as 3 classes principais usadas para configurar hosts?", ["Classes A, B e C.", "Classes A e B.", "Classes B e C.", "Classes C, D e E.", "Classes X, Y e Z."], 30],
+            ["31. Qual é a faixa do primeiro octeto que define um IP como Classe A?", ["De 1 a 127", "De 128 a 191", "De 192 a 223", "De 224 a 239", "De 240 a 255"], 30],
+            ["32. Qual é a máscara de sub-rede padrão de fábrica de um endereço de Classe A?", ["255.0.0.0", "255.255.0.0", "255.255.255.0", "255.255.255.255", "0.0.0.0"], 30],
+            ["33. Quantos octetos representam a porção de 'Rede' na Classe A padrão?", ["Apenas o primeiro octeto.", "Os dois primeiros octetos.", "Os três primeiros octetos.", "O quarto octeto apenas.", "Nenhum octeto."], 30],
+            ["34. Qual é a faixa numérica do primeiro octeto que define um IP como Classe B?", ["De 128 a 191", "De 1 a 127", "De 192 a 223", "De 224 a 239", "De 240 a 255"], 30],
+            ["35. Qual é a máscara de sub-rede padrão de fábrica de um endereço de Classe B?", ["255.255.0.0", "255.0.0.0", "255.255.255.0", "255.255.255.255", "0.0.0.0"], 30],
+            ["36. Quantos octetos representam a porção de 'Hosts' na Classe B padrão?", ["Os 2 últimos octetos.", "O último octeto apenas.", "Os 3 últimos octetos.", "Todos os octetos.", "Nenhum octeto."], 30],
+            ["37. Qual é a faixa numérica do primeiro octeto que define um IP como Classe C?", ["De 192 a 223", "De 1 a 127", "De 128 a 191", "De 224 a 239", "De 240 a 255"], 30],
+            ["38. Qual é a máscara de sub-rede padrão de fábrica de um endereço de Classe C?", ["255.255.255.0", "255.0.0.0", "255.255.0.0", "255.255.255.255", "0.0.0.0"], 30],
+            ["39. Quantos computadores (hosts válidos) cabem, no máximo, dentro de uma rede Classe C padrão?", ["254 hosts", "256 hosts", "128 hosts", "512 hosts", "65534 hosts"], 30],
+            ["40. Para que serve a faixa reservada da Classe D de IPs (224 a 239)?", ["Estritamente para tráfego de Multicast (grupos específicos).", "Para tráfego de Broadcast global.", "Para acesso em conexões VPN do tipo Anycast.", "Para envio de mensagens Unicast de gerência.", "Para simular falhas em diagnósticos de Loopback."], 30],
+            ["41. Para que serve a faixa reservada da Classe E de IPs (240 a 255)?", ["Reservada para fins experimentais, de pesquisa e uso futuro.", "Destinada exclusivamente ao protocolo IPv6.", "Utilizada pelos provedores para controle interno de BGP.", "Gera os endereços automáticos APIPA nas falhas do DHCP.", "Distribuída apenas para governos militares."], 30],
+            ["42. Por que o bloco número 127 não é comercializado na Classe A?", ["Toda a faixa 127 é reservada para testes locais da própria placa de rede (Loopback).", "Foi um bloco bloqueado globalmente devido a ataques DDoS históricos.", "Ele foi convertido para a fundação da tecnologia IPv6.", "É de uso exclusivo dos roteadores raiz (Root DNS).", "Sua numeração decimal não pode ser convertida para binário por falha de design."], 30],
+            ["43. Qual é o IP de Loopback local mais conhecido e utilizado no terminal do computador?", ["127.0.0.1", "192.168.1.1", "10.0.0.1", "169.254.1.1", "0.0.0.0"], 30],
+            ["44. Qual é a faixa exata de IP privado estipulada para a Classe A?", ["De 10.0.0.0 até 10.255.255.255", "De 172.16.0.0 até 172.31.255.255", "De 192.168.0.0 até 192.168.255.255", "De 169.254.0.0 até 169.254.255.255", "De 127.0.0.0 até 127.255.255.255"], 30],
+            ["45. Qual é a faixa exata de IP privado estipulada para a Classe B?", ["De 172.16.0.0 até 172.31.255.255", "De 10.0.0.0 até 10.255.255.255", "De 192.168.0.0 até 192.168.255.255", "De 172.0.0.0 até 172.255.255.255", "De 169.254.0.0 até 169.254.255.255"], 30],
+            ["46. Qual é a faixa exata de IP privado estipulada para a Classe C?", ["De 192.168.0.0 até 192.168.255.255", "De 10.0.0.0 até 10.255.255.255", "De 172.16.0.0 até 172.31.255.255", "De 192.0.0.0 até 192.255.255.255", "De 169.254.0.0 até 169.254.255.255"], 30],
+            ["47. Qual a real finalidade dos blocos de IPs privados?", ["Serem utilizados livremente em redes internas; são proibidos de navegar na internet pública sem passar por NAT.", "Atribuir IP exclusivo a servidores web no mundo todo.", "Realizar conexões ponto-a-ponto entre datacenters remotos.", "Substituir a necessidade de tabelas MAC nos Switches locais.", "Fornecer um IP extra de backup para os Roteadores."], 30],
+            ["48. O que indica quando o seu computador assume um IP na faixa 169.254.x.x (APIPA)?", ["A máquina tentou obter IP automático, mas não encontrou nenhum servidor DHCP ativo na rede.", "A placa de rede do computador queimou e entrou em modo de segurança.", "A internet do provedor caiu, mas o roteador interno está funcionando.", "O firewall do Windows bloqueou a conexão de entrada e saída.", "Houve um conflito onde duas máquinas receberam o mesmo IP manualmente."], 30],
+            ["49. O que uma máquina com IP de APIPA consegue fazer no ambiente de rede?", ["Comunicar-se localmente apenas com outras máquinas físicas que também geraram IPs APIPA.", "Acessar a internet, mas de forma muito lenta devido à restrição de portas.", "Pingar servidores externos no Google (8.8.8.8), mas não os hosts locais.", "Nenhuma comunicação é permitida em nível de hardware.", "Acessar o menu de configuração do Roteador (Gateway) para correção."], 30],
+            ["50. Ao ler uma máscara de sub-rede em binário, o que os bits com valor '1' sinalizam?", ["Eles representam que aquela porção do endereço pertence estritamente à identificação da Rede.", "Eles indicam quais bits o administrador está livre para alterar nas máquinas Hosts.", "Sinalizam o endereço MAC em formato convertido na Camada 2.", "Identificam que o pacote atual é do tipo Multicast.", "Indicam que a rede atual está sofrendo com colisão lógica de pacotes."], 45],
+            ["51. O que significa a sigla CIDR?", ["Classless Inter-Domain Routing (Roteamento sem Classes - a notação por barras /).", "Cisco Internal Data Routing (Roteamento de Dados Internos da Cisco).", "Core Internet Domain Resolver (Resolvedor de Domínio Central).", "Custom IP Default Routing (Roteamento Padrão de IP Personalizado).", "Control Identification of Data Request (Controle de Identificação de Requisição)."], 30],
+            ["52. A notação por barra '/24' se traduz em qual máscara decimal por extenso?", ["255.255.255.0", "255.0.0.0", "255.255.0.0", "255.255.255.128", "255.255.255.255"], 45],
+            ["53. Se alterarmos o prefixo de uma sub-rede de /24 para /25, o que acontece com a quantidade de hosts disponíveis?", ["O espaço de hosts é cortado exatamente pela metade (de 254 para 126 úteis).", "O espaço de hosts dobra de tamanho, comportando mais de 500 máquinas.", "Permanece o mesmo, apenas o endereço de gateway é alterado.", "A rede perde totalmente a capacidade de enviar tráfego de broadcast.", "O número de hosts é reduzido a apenas 2, útil para ponto-a-ponto."], 45],
+            ["54. Qual é a máscara decimal correspondente a um link de prefixo /30?", ["255.255.255.252", "255.255.255.248", "255.255.255.240", "255.255.255.0", "255.255.255.254"], 60],
+            ["55. Quantos hosts válidos (utilizáveis) existem em uma sub-rede com máscara /30?", ["Apenas 2 hosts.", "4 hosts.", "6 hosts.", "14 hosts.", "30 hosts."], 60],
+            ["56. Qual é a máscara decimal por extenso representada pelo CIDR /26?", ["255.255.255.192", "255.255.255.224", "255.255.255.128", "255.255.255.240", "255.255.255.248"], 60],
+            ["57. Qual fórmula matemática determina o número total de IPs de um bloco baseado nos bits de host (n)?", ["2^n", "2^n - 2", "2*n", "n^2", "n/2"], 30],
+            ["58. Qual fórmula determina o número de IPs válidos (atribuíveis a máquinas) tirando as exceções?", ["2^n - 2", "2^n", "2*n - 2", "n^2 - 2", "n/2 - 2"], 30],
+            ["59. Quais são os dois endereços obrigatórios que são subtraídos da fórmula de IPs válidos?", ["O endereço identificador da própria Rede e o endereço de Broadcast.", "O Gateway padrão e o servidor DNS.", "O IP de Loopback e o IP APIPA.", "O MAC address de origem e destino.", "O primeiro IP válido e o Gateway da operadora."], 45],
+            ["60. O que é o conceito de 'Número Mágico' no cálculo rápido de sub-redes?", ["É o tamanho total do bloco (o intervalo de salto) que dita onde termina uma sub-rede e começa a próxima.", "É o IP exato utilizado como Gateway do roteador para acessar a WAN.", "É o valor da soma dos 4 octetos de uma máscara /24.", "É a conversão binária do número 255 para decimal.", "É o número da porta de roteamento dinâmico do OSPF."], 45],
+            ["61. Como descobrimos o Número Mágico de um octeto alterado usando subtração simples?", ["Subtraindo o valor decimal daquele octeto do número fixo 256.", "Dividindo o valor decimal por 2 consecutivamente.", "Multiplicando o último octeto por 8 bits.", "Somando 128 ao valor final da máscara.", "Subtraindo o valor decimal de 255 (que é o máximo utilizável)."], 60],
+            ["62. Na máscara de sub-rede 255.255.255.240 (/28), qual é o valor do Número Mágico (salto)?", ["O salto é de 16 em 16.", "O salto é de 8 em 8.", "O salto é de 32 em 32.", "O salto é de 4 em 4.", "O salto é de 64 em 64."], 60],
+            ["63. Quais são as três primeiras sub-redes criadas ao fatiar o bloco 192.168.1.0 com máscara /28?", ["192.168.1.0, 192.168.1.16 e 192.168.1.32.", "192.168.1.0, 192.168.1.8 e 192.168.1.16.", "192.168.1.0, 192.168.1.32 e 192.168.1.64.", "192.168.1.0, 192.168.1.64 e 192.168.1.128.", "192.168.1.0, 192.168.1.10 e 192.168.1.20."], 60],
+            ["64. Se a sub-rede inicial é .0 e a segunda inicia em .16, qual será o IP de Broadcast da primeira sub-rede?", ["192.168.1.15", "192.168.1.16", "192.168.1.14", "192.168.1.31", "192.168.1.255"], 60],
+            ["65. Em uma máscara /29, qual o tamanho total do bloco de IPs e quantos de fato são utilizáveis?", ["O bloco tem 8 IPs, sendo 6 utilizáveis.", "O bloco tem 4 IPs, sendo 2 utilizáveis.", "O bloco tem 16 IPs, sendo 14 utilizáveis.", "O bloco tem 32 IPs, sendo 30 utilizáveis.", "O bloco tem 64 IPs, sendo 62 utilizáveis."], 60],
+            ["66. Se uma máquina recebe o IP 192.168.10.5 com máscara /23, os saltos das sub-redes ocorrem de quanto em quanto e onde?", ["Ocorrem de 2 em 2, avançando no terceiro octeto.", "Ocorrem de 4 em 4 no quarto octeto.", "Ocorrem de 128 em 128 no quarto octeto.", "Ocorrem de 1 em 1 no terceiro octeto.", "Ocorrem de 2 em 2 no quarto octeto."], 60],
+            ["67. Por que razão o cálculo de uma máscara /23 afeta o terceiro octeto em vez do quarto?", ["23 bits são rede e 9 bits são hosts, pegando 8 bits do 4º octeto e 1 bit do 3º octeto.", "Porque a máscara 255.255.255.0 sempre ignora o último octeto em cálculos CIDR.", "É uma regra exclusiva adotada para acomodar redes legadas da Classe A.", "Porque o IPv6 força a leitura em blocos de 16 bits.", "Isso é um mito, máscaras até /24 afetam unicamente o quarto octeto."], 60],
+            ["68. O que significa o termo técnico 'Super-rede' (Supernetting)?", ["O processo de agregar redes menores contíguas (ex: dois /24) em um único bloco maior (ex: /23).", "A quebra excessiva de um grande bloco /8 em milhares de /30.", "A utilização da tecnologia NAT Overload para criar IPs falsos.", "O repasse de tabelas ARP entre datacenters em nuvem.", "A criação de sub-redes em um switch operando na Camada 2."], 45],
+            ["69. Qual é o endereço exato de rede onde se encontra o host de IP 192.168.1.65 /26?", ["Encontra-se na rede 192.168.1.64", "Encontra-se na rede 192.168.1.0", "Encontra-se na rede 192.168.1.32", "Encontra-se na rede 192.168.1.128", "Encontra-se na rede 192.168.1.65"], 60],
+            ["70. Qual é o endereço de Broadcast da sub-rede do host 192.168.1.65 /26?", ["192.168.1.127", "192.168.1.63", "192.168.1.255", "192.168.1.128", "192.168.1.191"], 60],
+            ["71. Qual é a representação decimal pontuada correspondente ao prefixo CIDR /27?", ["255.255.255.224", "255.255.255.240", "255.255.255.192", "255.255.255.248", "255.255.255.252"], 60],
+            ["72. Qual é a principal vantagem da implementação da máscara /31 em redes modernas (RFC 3021)?", ["Economizar IPs em conexões P2P diretas entre roteadores, eliminando o desperdício com IDs de rede e broadcast.", "Aumentar a banda de domínios de broadcast gigantescos de forma automática.", "Reduzir a latência do cabo de fibra óptica substituindo a checagem FCS.", "Permitir conexões VPN usando protocolo ARP invisível.", "Impedir ataques DDoS limitando a máquina a apenas 31 conexões web por vez."], 45],
+            ["73. O endereço IP 192.168.1.0 pode ser um IP válido de máquina caso a máscara seja um /23?", ["Sim, pois no /23 a rede inicia em 192.168.0.0, e o IP .1.0 fica no meio do intervalo utilizável de hosts.", "Não, finais em .0 são permanentemente travados como ID de rede em todo o TCP/IP.", "Não, o final .0 é o endereço estrito de Broadcast nesta sub-rede específica.", "Não, a faixa 192 é Classe C e portanto não aceita máscaras menores que /24.", "Sim, mas a máquina perderá acesso à internet por ser um número par."], 60],
+            ["74. Como se chama a técnica que permite aplicar máscaras de sub-rede de tamanhos diferentes dentro de uma mesma topologia?", ["VLSM (Variable Length Subnet Mask)", "CIDR (Classless Inter-Domain Routing)", "NAT (Network Address Translation)", "PAT (Port Address Translation)", "STP (Spanning Tree Protocol)"], 30],
+            ["75. O que ocorre se um administrador configurar por erro uma sobreposição de sub-redes (overlap) nas interfaces de um roteador?", ["O sistema (ex: Cisco IOS) rejeita o comando exibindo um erro, pois não aceita duas interfaces na mesma interseção de IP.", "O roteador sofre um reboot instantâneo para proteger sua NVRAM.", "A rede funcionará, porém pacotes serão roteados aleatoriamente em ambas.", "O pacote é sumariamente descartado pelo switch da sala antes de chegar ao roteador.", "As redes são fundidas pelo roteador automaticamente em uma Super-rede /16."], 45],
+            ["76. Qual é a porta lógica padrão associada às conexões de páginas web via protocolo HTTP?", ["Porta 80", "Porta 443", "Porta 21", "Porta 22", "Porta 25"], 30],
+            ["77. Qual protocolo seguro criptografado substituiu o tráfego HTTP comum nas páginas web e qual a sua porta padrão?", ["HTTPS, porta 443", "HTTP, porta 8080", "SSH, porta 22", "FTP, porta 21", "Telnet, porta 23"], 30],
+            ["78. Qual utilitário de terminal baseado em ICMP é executado para validar de forma rápida a conectividade na Camada 3?", ["Comando ping", "Comando tracert", "Comando nslookup", "Comando ipconfig", "Comando arp"], 30],
+            ["79. Qual comando de diagnóstico testa e interroga diretamente a resolução de nomes de um servidor DNS?", ["Comando nslookup", "Comando ping", "Comando tracert", "Comando nmap", "Comando netstat"], 30],
+            ["80. Qual é a função primária do protocolo DNS na internet e qual a sua porta de escuta padrão?", ["Traduzir nomes legíveis (google.com) em IPs legíveis por máquinas; porta 53.", "Distribuir IPs automaticamente para todas as máquinas da LAN; porta 67.", "Transferir arquivos de grande porte entre matriz e filial; porta 21.", "Garantir acesso remoto textual seguro à CLI do roteador; porta 22.", "Sincronizar a hora mundial de todos os servidores locais; porta 123."], 30],
+            ["81. Qual protocolo automatiza a entrega de configurações de rede (IP, máscara) e quais as suas portas?", ["DHCP; utiliza as portas 67 (servidor) e 68 (cliente).", "DNS; utiliza a porta 53.", "FTP; utiliza as portas 20 e 21.", "SNMP; utiliza as portas 161 e 162.", "SMTP; utiliza a porta 25."], 30],
+            ["82. O que representa o acrônimo 'DORA' dentro das fases de troca de pacotes do protocolo DHCP?", ["Discover, Offer, Request, Acknowledge", "Data, Output, Receive, Accept", "Domain, Object, Route, ARP", "Dynamic, Option, Reply, Access", "Direct, Open, Resolve, Authenticate"], 30],
+            ["83. Qual protocolo é padrão para realizar gerência e acesso remoto textual seguro a roteadores, e qual sua porta?", ["SSH; porta 22", "Telnet; porta 23", "FTP; porta 21", "HTTP; porta 80", "RDP; porta 3389"], 30],
+            ["84. Por qual motivo de segurança o Telnet foi banido da gerência de ativos corporativos?", ["Porque trafega todos os dados e senhas em texto claro, sem nenhuma criptografia, permitindo interceptação.", "Porque é muito pesado e causa lentidão na CPU dos Switches Cisco.", "Por utilizar uma porta lógica que é frequentemente bloqueada pelos provedores de internet ISP.", "Porque é incompatível com sistemas operacionais modernos, servindo apenas para Windows XP.", "Porque ele foi embutido dentro das funções do HTTPS, tornando-se redundante."], 30],
+            ["85. Qual é a porta padrão utilizada pelo protocolo RDP para Área de Trabalho Remota em Windows?", ["Porta 3389", "Porta 22", "Porta 443", "Porta 8080", "Porta 21"], 30],
+            ["86. Qual a diferença fundamental de comportamento entre os protocolos TCP e UDP?", ["O TCP garante entrega correta e checada de pacotes; o UDP envia sem checar, priorizando velocidade sobre confiabilidade.", "O TCP é sem conexão, focado em streaming; o UDP é lento e usado para emails.", "O TCP trabalha na Camada 2 manipulando MACs; o UDP opera na Camada 3 manipulando IPs.", "O TCP foi substituído pelo UDP nas redes mais rápidas de Fibra Óptica 10G.", "Ambos possuem a mesma função, mas o UDP exige um Handshake rigoroso antes de enviar o dado."], 30],
+            ["87. Como é denominado o processo de abertura de conexão do TCP através dos bits sinalizadores (SYN, ACK)?", ["Handshake de 3 vias (Three-Way Handshake)", "Handshake de 4 vias", "Sinal de Jam no CSMA/CD", "Processo DORA", "ARP Request de verificação"], 30],
+            ["88. Quais são as portas utilizadas pelo FTP para gerenciar sessões de controle e sessões de dados?", ["Porta 21 (controle) e Porta 20 (dados)", "Portas 22 e 23", "Portas 80 e 443", "Portas 67 e 68", "Portas 161 e 162"], 30],
+            ["89. Qual protocolo de aplicação é encarregado exclusivo pela transferência e envio de e-mails entre servidores, e qual a porta?", ["SMTP, operando na porta 25", "POP3, operando na porta 110", "IMAP, operando na porta 143", "SNMP, operando na porta 161", "HTTP, operando na porta 80"], 30],
+            ["90. Qual a diferença no manuseio de mensagens entre POP3 e IMAP?", ["O POP3 baixa e costuma apagar as mensagens da nuvem; o IMAP mantém os e-mails sincronizados em tempo real no servidor.", "O POP3 mantém sincronia em múltiplos dispositivos, enquanto o IMAP as deleta do servidor.", "Ambos os protocolos têm a função final de apagar os e-mails para poupar espaço da operadora.", "O POP3 é exclusivo para envio de e-mails, e o IMAP exclusivo para recepção local.", "O IMAP requer obrigatoriamente cabos de Fibra, enquanto o POP3 roda em cabos UTP convencionais."], 30],
+            ["91. O que define estruturalmente uma VLAN (Virtual LAN) dentro de um switch?", ["Uma segmentação lógica que divide fisicamente um único switch em múltiplos domínios de broadcast isolados.", "Uma conexão física L1 de alta capacidade entre portas vizinhas.", "O roteamento L3 realizado internamente na placa mãe sem usar a tabela CAM.", "Um túnel de criptografia VPN criado pela Camada 2 no enlace.", "A junção redundante do protocolo STP para impedir loops na rede corporativa."], 30],
+            ["92. É possível estabelecer comunicação direta de pacotes entre duas VLANs distintas sem um roteador?", ["Não, pois estão em domínios isolados, exigindo roteamento inter-VLAN (ativo Camada 3).", "Sim, basta conectá-las usando um cabo crossover na mesma placa-mãe do switch.", "Sim, contanto que o switch legados utilize hubs para o cruzamento dos dados.", "Sim, o protocolo CSMA/CD se encarrega de transferir o broadcast nativamente.", "Sim, o switch de fábrica resolve a comunicação usando apenas o comando VLAN Access."], 45],
+            ["93. Qual a função vital desempenhada pelo protocolo ARP (Address Resolution Protocol)?", ["Descobrir o endereço MAC físico quando o dispositivo conhece apenas o endereço IP lógico de destino.", "Descobrir o IP a partir do MAC, utilizado em inicializações reversas de sistemas obsoletos.", "Traduzir nomes amigáveis para IPs de forma local caso o DNS principal da operadora caia.", "Distribuir dinamicamente configurações de portas e máscaras na LAN.", "Criar as rotas estáticas na tabela de Roteamento para navegação externa."], 30],
+            ["94. Qual é o limite máximo de propagação de um pacote de Broadcast?", ["Viaja por todo o domínio L2, mas é bloqueado e descartado ao atingir a interface de um Roteador.", "Atravessa o roteador e se espalha livremente por todos os equipamentos da internet pública.", "O pacote é bloqueado internamente no switch pela detecção do protocolo STP L2.", "O broadcast dá uma volta na rede e sempre retorna à máquina de origem pedindo confirmação.", "Ele alcança todo o mundo através do túnel dinâmico estabelecido pelo servidor DNS."], 45],
+            ["95. Qual o papel do recurso 'IGMP Snooping' nos switches com tráfego de vídeo/IPTV?", ["Mapeia quais portas solicitaram conteúdo multicast, enviando o fluxo de vídeo apenas a elas, poupando a banda da rede.", "Bloqueia ativamente qualquer broadcast para impedir falhas catastróficas de broadcast storm L2.", "Aumenta virtualmente a banda das portas configuradas a 10Gbps para impedir o travamento da imagem.", "Evita loops na Camada 2 bloqueando portas redundantes que causam queda nos vídeos.", "Traduz automaticamente os IPs locais de vídeo para a plataforma de nuvem externa."], 30],
+            ["96. Qual protocolo permite que sistemas de monitoramento como o Zabbix coletem a saúde de switches, e qual a porta?", ["SNMP, porta 161", "NTP, porta 123", "SMTP, porta 25", "SSH, porta 22", "FTP, porta 21"], 30],
+            ["97. Qual protocolo garante a sincronização de data e hora em roteadores, e qual a sua porta?", ["NTP, porta 123", "SNMP, porta 161", "DNS, porta 53", "DHCP, porta 67", "HTTP, porta 80"], 30],
+            ["98. O que ocorre se você conectar por engano uma fonte de alimentação com Tensão (Voltagem) maior no roteador?", ["A tensão excessiva sobrecarregará os circuitos, queimando a placa do roteador imediatamente.", "O roteador funcionará, porém processando o roteamento dinâmico em dobro de velocidade.", "O circuito inteligente irá ignorar a voltagem excessiva regulando perfeitamente a tensão final.", "O equipamento enviará um e-mail de alerta de erro fatal via protocolo ICMP.", "A porta de conexão elétrica simplesmente se desligará usando o sistema de autodefesa PoE."], 30],
+            ["99. Se o roteador pede 0.6A de corrente, há algum perigo em alimentá-lo com uma fonte de 1A com a mesma voltagem?", ["Não há perigo. A Amperagem dita a capacidade máxima segura; o roteador puxará apenas os 0.6A que precisa.", "Queimará o equipamento em segundos por superaquecimento excessivo da fonte primária.", "Diminuirá severamente a vida útil dos componentes da placa mãe e da tabela CAM L2.", "O dispositivo desligará e ligará a cada 5 minutos devido ao pico da amperagem residual L1.", "Aumentará o risco de causar lentidão estrutural de rede e gargalo excessivo de tráfego (Broadcast)."], 30],
+            ["100. Em redes IPv6, qual é a finalidade do bloco de endereços do prefixo fe80::/10?", ["Identificar endereços Link-Local gerados automaticamente para comunicação na mesma rede física sem roteador ou DHCP.", "Servir como IP exclusivo de Loopback para realizar ping de teste de diagnóstico de falha de interface.", "Mapear o sistema global de roteamento em ambientes baseados em BGP e tráfego intercontinental.", "Fornecer um endereço exclusivo de Broadcast obrigatório para conversão de máquinas antigas com IPv4.", "Ser o endereço APIPA de falha, acionado unicamente quando a fibra óptica principal L1 sofre ruptura."], 30]
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let timeLeft = 0;
+        let timerId;
+        let answered = false;
+
+        const qText = document.getElementById("question-text");
+        const optionsBox = document.getElementById("options-container");
+        const actBtn = document.getElementById("action-btn");
+        const qCount = document.getElementById("question-counter");
+        const timeDisplay = document.getElementById("timer");
+        const quizDiv = document.getElementById("quiz-container");
+        const resDiv = document.getElementById("result-container");
+        const finalScore = document.getElementById("final-score");
+        const resMsg = document.getElementById("result-msg");
+
+        function loadQuestion() {
+            clearInterval(timerId);
+            answered = false;
+            actBtn.innerText = "Confirmar Resposta";
+            actBtn.disabled = true;
+
+            const qData = db[currentIndex];
+            qCount.innerText = `${currentIndex + 1}/${db.length}`;
+            qText.innerText = qData[0];
+            timeLeft = qData[2];
+            updateTimeUI();
+
+            // Mapeando respostas para lembrar qual era a índice 0 (correta)
+            let optionsObj = qData[1].map((text, idx) => {
+                return { text: text, isCorrect: idx === 0 };
+            });
+
+            // Embaralhamento (Shuffle)
+            optionsObj.sort(() => Math.random() - 0.5);
+
+            optionsBox.innerHTML = '';
+            const labels = ['A', 'B', 'C', 'D', 'E'];
+
+            optionsObj.forEach((opt, index) => {
+                const optDiv = document.createElement("div");
+                optDiv.className = "option";
+                optDiv.innerHTML = `<span class="option-letter">[${labels[index]}]</span> <span>${opt.text}</span>`;
+                optDiv.onclick = () => selectOpt(optDiv, opt.isCorrect);
+                optionsBox.appendChild(optDiv);
+            });
+
+            startTimer();
+        }
+
+        let currentSelectionCorrect = false;
+
+        function selectOpt(elem, isCorrect) {
+            if(answered) return;
+            document.querySelectorAll(".option").forEach(el => el.classList.remove("selected"));
+            elem.classList.add("selected");
+            currentSelectionCorrect = isCorrect;
+            actBtn.disabled = false;
+        }
+
+        function startTimer() {
+            timerId = setInterval(() => {
+                timeLeft--;
+                updateTimeUI();
+                if(timeLeft <= 0) {
+                    clearInterval(timerId);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimeUI() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            timeDisplay.innerText = `${m}:${s}`;
+            timeDisplay.className = "timer " + (timeLeft > 15 ? "safe" : (timeLeft > 5 ? "warning" : ""));
+        }
+
+        function handleTimeout() {
+            answered = true;
+            actBtn.innerText = "Tempo Esgotado - Avançar";
+            actBtn.disabled = false;
+            revealAnswers();
+        }
+
+        function revealAnswers() {
+            document.querySelectorAll(".option").forEach(opt => {
+                opt.classList.add("disabled");
+                // Achando a correta pelo banco de dados original daquela questão (A string exata de índice 0)
+                if(opt.innerText.includes(db[currentIndex][1][0])) {
+                    opt.classList.add("correct");
+                }
+            });
+        }
+
+        actBtn.onclick = () => {
+            if(!answered) {
+                // Checar resposta escolhida
+                clearInterval(timerId);
+                answered = true;
+                
+                const selected = document.querySelector(".option.selected");
+                revealAnswers();
+
+                if(currentSelectionCorrect) {
+                    score++;
+                } else {
+                    selected.classList.add("wrong");
+                }
+
+                actBtn.innerText = "Próxima Pergunta >>";
+            } else {
+                // Avançar tela
+                currentIndex++;
+                if(currentIndex < db.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            }
+        };
+
+        function showResults() {
+            quizDiv.style.display = "none";
+            resDiv.style.display = "block";
+            const p = Math.round((score / db.length) * 100);
+            finalScore.innerText = `${p}%`;
+            if(p >= 80) {
+                finalScore.classList.add("pass");
+                resMsg.innerText = "Aprovado! Você atingiu o domínio dos pré-requisitos L1 a L4.";
+            } else {
+                finalScore.classList.add("fail");
+                resMsg.innerText = "Reprovado. Necessário revisar o Guia de Estudo Dirigido antes da aula presencial.";
+            }
+        }
+
+        // Boot
+        loadQuestion();
+    </script>
+</body>
+</html>
